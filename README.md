@@ -10,19 +10,52 @@ cross-contract pairs.
 
 ---
 
+## Live demo
+
+**<TODO: paste the Vercel URL here after the first deploy — see [DEPLOYMENT.md](DEPLOYMENT.md)>**
+
+No wallet extension needed: hit **Dev key → Create + fund** and Friendbot
+funds a throwaway testnet account, which is exactly how the screenshots and
+the e2e suites below were produced.
+
+**Demo video (90s):** <TODO: paste the Loom/YouTube link — script in [DEMO.md](DEMO.md#demo-video-90-seconds)>
+
+---
+
 ## Screenshots
 
-Wallet options available:
+Captured by [`frontend/screenshots.mjs`](frontend/screenshots.mjs) against the
+contracts listed below, so what you see is the live deployment rather than a
+mock-up. Regenerate them any time with `npm run screenshots`.
 
-![wallet](/images/1.png)
+### Mobile — 390 × 844
 
-Deployed contract:
+| Swap | Mint NFT |
+| --- | --- |
+| ![Swap on mobile](images/mobile-swap.png) | ![Mint on mobile](images/mobile-mint.png) |
 
-![contract](/images/2.png)
+A live Horizon quote and orderbook on the left; the mint form, your NFTs and
+the pool's holdings on the right. Both fit a phone with no horizontal scroll.
 
-Transaction verifiable on Stellar Explorer:
+### Desktop — 1440 × 900
 
-![Stellar Explorer](/images/3.png)
+![Swap on desktop](images/desktop-swap.png)
+
+Note the **Registry events** panel: swap `#4`, `fee 0.075 (30bps)`, ledger
+4582301. That fee was quoted by `fee_vault` during the same invocation that
+`swap_registry` recorded — the cross-contract call, visible from the outside.
+
+### CI and tests
+
+| | |
+| --- | --- |
+| ![CI pipeline](images/ci-pipeline.png) | ![Test output](images/test-output.png) |
+
+> **These two are not committed yet.** They have to be screenshots of your own
+> run — the Actions tab after a push, and a terminal showing `cargo test --all`
+> and `npm run test:run`. The real output of both is saved verbatim in
+> [`docs/test-output.txt`](docs/test-output.txt) (72 Rust tests, 56 frontend
+> tests, all passing) if you want something to screenshot.
 
 ---
 
@@ -363,27 +396,57 @@ RESULT:    SUCCESS (registry swap #2)
 
 ### Transaction hashes
 
-Both are live on testnet — click through to the explorer. They were submitted
-five seconds apart by the same account, in ledgers 4088584 and 4088585: the
-registry invocation clears first, and the DEX swap only settles once it has.
+Every hash below was submitted by the browser against live testnet and checked
+against Horizon (`successful: true`) before being listed here. Click any of
+them to open the explorer.
 
-| # | Action | Contracts touched | Ledger | Transaction |
-| --- | --- | --- | --- | --- |
-| 1 | `record_swap` — validates, quotes the fee, accrues volume | `swap_registry` → `fee_vault` (×2, one invocation) | 4088584 | [`0a8085d7…c0b7c2`](https://stellar.expert/explorer/testnet/tx/0a8085d746a8e72cb559f1047dfaa40c464e068d552743efc760a79aa7c0b7c2) |
-| 2 | `path_payment_strict_send` — the swap itself | classic DEX orderbook | 4088585 | [`e72d85e5…4b6d03`](https://stellar.expert/explorer/testnet/tx/e72d85e5353bb6ca3803be92a8ec9a767d07db9c00e5dba580170d6b1c4b6d03) |
+**Swap pair** — `swap_registry` → `fee_vault`:
 
-Source account
-[`GCZRFQM4…LHOVO`](https://stellar.expert/explorer/testnet/account/GCZRFQM4QB6NK7T6GH4HK4MXKJUCTGEGIRXZDNTLSKXZZNQNDRNLHOVO)
-· both `successful: true`. Verify either one straight from Horizon:
+| Action | Contracts executed | Ledger | Transaction |
+| --- | --- | --- | --- |
+| `record_swap` — validate, quote the fee, accrue volume | `swap_registry` **+** `fee_vault` | 4582301 | [`210ba4c2…04e24`](https://stellar.expert/explorer/testnet/tx/210ba4c203fe2ea1b356f0c477a50dd33e5bc47b76e9271d756bff2746704e24) |
+| `path_payment_strict_send` — the swap itself | classic DEX orderbook | 4582302 | [`c3d6f725…52c60`](https://stellar.expert/explorer/testnet/tx/c3d6f7253de7038c70bd4174550a306224da4336ccd5b02a11549ebc44952c60) |
+
+**NFT pair** — `nft_collection` ↔ `nft_pool`:
+
+| Action | Events emitted | Ledger | Transaction |
+| --- | --- | --- | --- |
+| `mint` — NFT #11 to the wallet | `mint` (collection) | 4582329 | [`f637f571…2b569`](https://stellar.expert/explorer/testnet/tx/f637f57167ceb5ab08bbfbff92e450dfc07f504d7cf9a8f16af25f312b22b569) |
+| `add` — deposit #11 into the pool | `transfer` (collection) **+** `deposit` (pool) | 4582331 | [`667b1f71…0e666`](https://stellar.expert/explorer/testnet/tx/667b1f711799f3d01155a286031ba5959f1402ed438a792d67f10910e430e666) |
+| `mint_to_pool` — NFT #12 straight into the pool | `mint` (collection) **+** `deposit` (pool) | 4582333 | [`9d0ab21f…5f685`](https://stellar.expert/explorer/testnet/tx/9d0ab21ff3713d21e7c1975341d3fa2aad9a25fd0587d3b4c074657ad6d5f685) |
+
+The three bolded rows are the point of the architecture: **one** submitted
+transaction, **two** contracts executed, events from both. Read them straight
+off the RPC rather than taking this table's word for it:
+
+```bash
+stellar events --network testnet --start-ledger 4582325 \
+  --id CBMIQ343QRVOUGXE7OUPCZNNYGWBDWMS56UALN5NIHWZALN6IDYYYEUV \
+  --id CBADR5KPKYFMMMMOUWYIZXZ4NZGRWTNPJEUQN6OLGU52OLWALT2CKTZG
+```
+
+`667b1f71…` and `9d0ab21f…` each appear **twice** in that output, once per
+contract, with a single shared `txHash` — which is what a cross-contract call
+looks like from the outside.
+
+Or verify a single transaction with nothing but curl:
 
 ```bash
 curl -s https://horizon-testnet.stellar.org/transactions/\
-0a8085d746a8e72cb559f1047dfaa40c464e068d552743efc760a79aa7c0b7c2 | jq '.successful, .ledger'
+210ba4c203fe2ea1b356f0c477a50dd33e5bc47b76e9271d756bff2746704e24 | jq '.successful, .ledger'
 ```
 
-Transaction 1 is the interesting one for the brief: **one** submitted
-transaction, **two** contracts executed, with the fee the vault quoted written
-into the event the registry emits.
+<details>
+<summary>Earlier run, kept for reference</summary>
+
+The first documented swap, ledgers 4088584 / 4088585 — still live:
+[`0a8085d7…c0b7c2`](https://stellar.expert/explorer/testnet/tx/0a8085d746a8e72cb559f1047dfaa40c464e068d552743efc760a79aa7c0b7c2)
+(registry + vault) and
+[`e72d85e5…4b6d03`](https://stellar.expert/explorer/testnet/tx/e72d85e5353bb6ca3803be92a8ec9a767d07db9c00e5dba580170d6b1c4b6d03)
+(DEX). Soroban RPC only serves events for a limited ledger window, so these no
+longer show up in the in-app feed — the transactions themselves are permanent.
+
+</details>
 
 The vault's totals then read `total_volume: 1250000000`, `total_fees: 3750000` —
 exactly 30 bps of both swaps.
