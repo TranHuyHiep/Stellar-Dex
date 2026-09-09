@@ -1,0 +1,94 @@
+name: Deploy frontend
+
+# The frontend is a static bundle with no server side, so every push to main
+# that builds cleanly can go straight to production.
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - 'frontend/**'
+      - 'vercel.json'
+      - '.github/workflows/deploy-frontend.yml'
+  workflow_dispatch:
+
+concurrency:
+  # A newer commit supersedes an in-flight deploy of an older one.
+  group: deploy-frontend
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Build and deploy to Vercel
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      # Deploying is the only step that needs credentials. Check for them up
+      # front so a fork or an unconfigured repo reports "skipped" instead of
+      # failing the build after doing all the work.
+      - name: Check for Vercel credentials
+        id: creds
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          if [ -n "${VERCEL_TOKEN:-}" ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::VERCEL_TOKEN is not set - building only, not deploying. See DEPLOYMENT.md."
+          fi
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      # The build has to pass on its own before anything is published, so a
+      # broken bundle never reaches the demo URL reviewers are given.
+      - name: Typecheck
+        working-directory: frontend
+        run: npx tsc -p tsconfig.app.json --noEmit
+
+      - name: Unit tests
+        working-directory: frontend
+        run: npm run test:run
+
+      - name: Build
+        working-directory: frontend
+        run: npm run build
+
+      - name: Deploy to Vercel
+        if: steps.creds.outputs.present == 'true'
+        id: vercel
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          set -euo pipefail
+          # `vercel deploy --prebuilt` would need `vercel build` output; letting
+          # Vercel build from source keeps vercel.json as the single source of
+          # truth for how the bundle is produced.
+          url=$(npx --yes vercel@latest deploy --prod --yes --token "$VERCEL_TOKEN")
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          echo "Deployed to $url"
+
+      - name: Summarise
+        run: |
+          {
+            if [ "${{ steps.creds.outputs.present }}" = "true" ]; then
+              echo "### Frontend deployed"
+              echo
+              echo "<${{ steps.vercel.outputs.url }}>"
+            else
+              echo "### Build only - not deployed"
+              echo
+              echo "Add \`VERCEL_TOKEN\`, \`VERCEL_ORG_ID\` and \`VERCEL_PROJECT_ID\` under"
+              echo "Settings -> Secrets and variables -> Actions. See DEPLOYMENT.md."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
