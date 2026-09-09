@@ -359,9 +359,31 @@ A full swap driven through the browser against live testnet:
 CONNECTED: GCZRF…LHOVO · Dev keypair
 QUOTE:     25 XLM → 44.8192760 USDC
 RESULT:    SUCCESS (registry swap #2)
-Registry tx  0a8085d746a8e72cb559f1047dfaa40c464e068d552743efc760a79aa7c0b7c2
-DEX swap tx  e72d85e5353bb6ca3803be92a8ec9a767d07db9c00e5dba580170d6b1c4b6d03
 ```
+
+### Transaction hashes
+
+Both are live on testnet — click through to the explorer. They were submitted
+five seconds apart by the same account, in ledgers 4088584 and 4088585: the
+registry invocation clears first, and the DEX swap only settles once it has.
+
+| # | Action | Contracts touched | Ledger | Transaction |
+| --- | --- | --- | --- | --- |
+| 1 | `record_swap` — validates, quotes the fee, accrues volume | `swap_registry` → `fee_vault` (×2, one invocation) | 4088584 | [`0a8085d7…c0b7c2`](https://stellar.expert/explorer/testnet/tx/0a8085d746a8e72cb559f1047dfaa40c464e068d552743efc760a79aa7c0b7c2) |
+| 2 | `path_payment_strict_send` — the swap itself | classic DEX orderbook | 4088585 | [`e72d85e5…4b6d03`](https://stellar.expert/explorer/testnet/tx/e72d85e5353bb6ca3803be92a8ec9a767d07db9c00e5dba580170d6b1c4b6d03) |
+
+Source account
+[`GCZRFQM4…LHOVO`](https://stellar.expert/explorer/testnet/account/GCZRFQM4QB6NK7T6GH4HK4MXKJUCTGEGIRXZDNTLSKXZZNQNDRNLHOVO)
+· both `successful: true`. Verify either one straight from Horizon:
+
+```bash
+curl -s https://horizon-testnet.stellar.org/transactions/\
+0a8085d746a8e72cb559f1047dfaa40c464e068d552743efc760a79aa7c0b7c2 | jq '.successful, .ledger'
+```
+
+Transaction 1 is the interesting one for the brief: **one** submitted
+transaction, **two** contracts executed, with the fee the vault quoted written
+into the event the registry emits.
 
 The vault's totals then read `total_volume: 1250000000`, `total_fees: 3750000` —
 exactly 30 bps of both swaps.
