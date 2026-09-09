@@ -28,18 +28,20 @@ Captured by [`frontend/screenshots.mjs`](frontend/screenshots.mjs) against the
 contracts listed below, so what you see is the live deployment rather than a
 mock-up. Regenerate them any time with `npm run screenshots`.
 
-### Mobile — 390 × 844
+### Mobile
 
-| Swap | Mint NFT |
+| Swap — 390 × 844 | Mint NFT — 390 × 844 |
 | --- | --- |
 | ![Swap on mobile](images/mobile-swap.png) | ![Mint on mobile](images/mobile-mint.png) |
 
 A live Horizon quote and orderbook on the left; the mint form, your NFTs and
 the pool's holdings on the right. Both fit a phone with no horizontal scroll.
 
-### Desktop — 1440 × 900
+### Desktop
 
 ![Swap on desktop](images/desktop-swap.png)
+
+*1440 × 900.*
 
 Note the **Registry events** panel: swap `#4`, `fee 0.075 (30bps)`, ledger
 4582301. That fee was quoted by `fee_vault` during the same invocation that
@@ -639,3 +641,36 @@ DEMO.md                demo script
   it has no pricing, no swapping of NFTs against each other, and no fees.
 - **Testnet orderbook liquidity is thin**, so quoted rates and the visible
   spread can look extreme next to mainnet.
+
+---
+
+## Submission checklist
+
+| Required | Where |
+| --- | --- |
+| Public GitHub repository | <https://github.com/TranHuyHiep/Stellar-Dex> |
+| README with complete documentation | this file |
+| Minimum 10+ meaningful commits | `git log --oneline` — 16 |
+| Live demo link | **[Live demo](#live-demo)** — ⚠️ paste the URL after the first Vercel deploy ([DEPLOYMENT.md](DEPLOYMENT.md)) |
+| Contract deployment address | [four addresses](#deployed-contracts-testnet), also in [`deployment.json`](deployment.json) |
+| Transaction hash for contract interaction | [five hashes](#transaction-hashes), all verified `successful: true` on Horizon |
+| Screenshot — mobile responsive UI | [`mobile-swap.png`](images/mobile-swap.png), [`mobile-mint.png`](images/mobile-mint.png) |
+| Screenshot — CI/CD pipeline running | ⚠️ `images/ci-pipeline.png` — capture after pushing |
+| Screenshot — test output, 3+ passing | ⚠️ `images/test-output.png` — 128 tests pass; raw output in [`docs/test-output.txt`](docs/test-output.txt) |
+| Demo video link (1–2 min) | ⚠️ shot list in [DEMO.md](DEMO.md#demo-video-90-seconds) — record and paste the link |
+
+⚠️ = needs something only you can produce: a deploy under your Vercel account,
+a push to your repo, or a recording. Everything else is in the repo.
+
+| Requirement | Where |
+| --- | --- |
+| Advanced smart contract development | [four contracts](#the-contracts) — typed errors, `#[contractevent]`, instance vs. persistent storage, `require_auth`, pause/close, checked arithmetic |
+| Inter-contract communication | [two pairs, calls in both directions](#inter-contract-communication) — and [on chain](#transaction-hashes) |
+| Event streaming & real-time updates | [`EventFeed.tsx`](frontend/src/components/EventFeed.tsx), [`NftEventFeed.tsx`](frontend/src/components/NftEventFeed.tsx) |
+| CI/CD pipeline setup | [`ci.yml`](.github/workflows/ci.yml), [`deploy-frontend.yml`](.github/workflows/deploy-frontend.yml) |
+| Smart contract deployment workflow | [`scripts/deploy.sh`](scripts/deploy.sh), [`deploy.yml`](.github/workflows/deploy.yml), [DEPLOYMENT.md](DEPLOYMENT.md) |
+| Mobile responsive frontend | [screenshots](#mobile) at 390px |
+| Error handling & loading states | [`errors.ts`](frontend/src/lib/errors.ts), [error handling](#error-handling) |
+| Tests for contracts and frontend | 72 Rust + 56 Vitest + 3 Playwright suites — [Testing](#testing) |
+| Production-ready architecture | [practices](#production-ready-practices), and the [limitations](#notes-and-limitations) they don't cover |
+| Documentation & demo presentation | this file, [DEMO.md](DEMO.md), [DEPLOYMENT.md](DEPLOYMENT.md) |

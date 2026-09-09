@@ -13,6 +13,37 @@ A ~9 minute walkthrough. Everything below runs against live Stellar testnet.
 
 ---
 
+## Demo video (90 seconds)
+
+The submission asks for a 1–2 minute video. This is the shot list; the long
+walkthrough below is the version to give a live audience.
+
+**Before recording:** `cd frontend && npm run dev`, connect with **Dev key →
+Create + fund**, and do one throwaway swap so the event feed has content. Soroban
+RPC only serves events for a limited ledger window, so a feed with nothing in it
+usually means the last swap was simply too long ago.
+
+| Time | On screen | Say |
+| --- | --- | --- |
+| **0:00–0:10** | Live demo URL, swap page loaded | "Stellar Studio — four Soroban contracts on testnet, arranged as two cross-contract pairs." |
+| **0:10–0:30** | Type `25` in Sell, quote fills, hit Swap, panel walks Validate → Quote → Registry → DEX swap → Done | "The quote is live from Horizon. One click submits two transactions: the registry validates and records, then the swap settles on the classic DEX." |
+| **0:30–0:45** | Point at Registry events: new row, `fee … (30bps)` | "That fee wasn't computed by the registry — it asked `fee_vault` during the same invocation. One transaction, two contracts, events from both." |
+| **0:45–1:05** | `/mint`: drop an image, CID appears, pick **The pool**, mint, gallery and NFT events update | "The image goes to IPFS, the CID on chain. Minting into the pool has `nft_collection` call `nft_pool` — again one transaction, two contracts." |
+| **1:05–1:20** | DevTools at 390px, then set Sell to `0` and show the error | "Responsive down to phone width. Contract errors are decoded, not raw — this one is `Error(Contract, #3)`, InvalidAmount, caught in simulation so it costs nothing." |
+| **1:20–1:30** | GitHub Actions tab, green run | "CI runs fmt, clippy, 72 contract tests and 56 frontend tests, builds the wasm, and deploys the frontend on every push." |
+
+**Recording tips**
+
+* 1280×720 or larger, browser zoom at 100%.
+* Do the swap **before** you start recording once, to warm the RPC — a cold
+  first quote can take a few seconds and eats a third of your budget.
+* If a swap fails on slippage mid-take, that's a fine thing to show: the panel
+  names the stage that failed. Don't cut it, explain it.
+
+Paste the finished link into the **Live demo** section of the README.
+
+---
+
 ## 0. Setup (before the demo)
 
 ```bash
