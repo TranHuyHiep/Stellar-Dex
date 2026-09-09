@@ -13,7 +13,8 @@
     "typecheck": "tsc -p tsconfig.app.json --noEmit",
     "e2e:swap": "node e2e-swap.mjs",
     "e2e:errors": "node e2e-errors.mjs",
-    "e2e:mint": "node e2e-mint.mjs"
+    "e2e:mint": "node e2e-mint.mjs",
+    "screenshots": "node screenshots.mjs"
   },
   "dependencies": {
     "@creit.tech/stellar-wallets-kit": "^2.5.0",
