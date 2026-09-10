@@ -1,93 +1,93 @@
-Test output — captured 2026-09-09T06:08:28Z on Linux 6.8.0-138-generic
+Test output — captured 2026-09-10T10:14:42Z on Linux 6.8.0-138-generic
 rustc 1.98.1 · node v24.20.0
 
 ============================================================
-$ cargo test --all
+$ cargo test --all                              72 passed
 ============================================================
      Running unittests src/lib.rs (target/debug/deps/fee_vault-3c966d791868b608)
 running 11 tests
 test test::fee_above_ceiling_is_rejected ... ok
-test test::accrue_tracks_volume_and_fees ... ok
-test test::accrue_rejects_non_positive_amount ... ok
 test test::initialize_twice_is_rejected ... ok
-test test::quote_rejects_non_positive_amount ... ok
 test test::only_the_registry_may_accrue ... ok
-test test::crossing_the_threshold_unlocks_the_discount ... ok
+test test::accrue_rejects_non_positive_amount ... ok
 test test::initialize_sets_fee_schedule ... ok
+test test::accrue_tracks_volume_and_fees ... ok
+test test::quote_rejects_non_positive_amount ... ok
+test test::crossing_the_threshold_unlocks_the_discount ... ok
 test test::quote_uses_base_fee_before_the_tier ... ok
 test test::set_fees_enforces_ceiling ... ok
 test test::volume_is_tracked_per_account ... ok
-test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.61s
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.18s
      Running unittests src/lib.rs (target/debug/deps/nft_collection-c9a32e3d9fc18fc5)
 running 18 tests
-test test::initialize_twice_is_rejected ... ok
-test test::mint_to_pool_without_a_pool_is_rejected ... ok
-test test::initialize_sets_defaults ... ok
+test test::only_admin_can_pause ... ok
 test test::empty_name_is_rejected ... ok
-test test::mint_emits_an_event ... ok
+test test::initialize_twice_is_rejected ... ok
+test test::mint_assigns_sequential_ids_and_metadata ... ok
+test test::initialize_sets_defaults ... ok
+test test::mint_to_pool_without_a_pool_is_rejected ... ok
 test test::empty_description_is_allowed ... ok
 test test::only_admin_can_set_the_pool ... ok
-test test::only_admin_can_pause ... ok
-test test::overlong_name_is_rejected ... ok
-test test::short_cid_is_rejected ... ok
+test test::mint_emits_an_event ... ok
 test test::reading_a_missing_token_is_rejected ... ok
-test test::mint_assigns_sequential_ids_and_metadata ... ok
-test test::tokens_are_indexed_per_owner ... ok
-test test::paused_collection_rejects_minting ... ok
+test test::short_cid_is_rejected ... ok
+test test::overlong_name_is_rejected ... ok
 test test::transfer_from_pool_rejects_a_non_pool_caller ... ok
-test test::transfer_moves_ownership_and_indexes ... ok
 test test::transferring_a_missing_token_is_rejected ... ok
+test test::transfer_moves_ownership_and_indexes ... ok
+test test::paused_collection_rejects_minting ... ok
+test test::tokens_are_indexed_per_owner ... ok
 test test::transferring_someone_elses_token_is_rejected ... ok
-test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.96s
+test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.60s
      Running unittests src/lib.rs (target/debug/deps/nft_pool-32e5eb32ecca37e2)
 running 17 tests
-test test::a_minted_token_can_be_withdrawn_by_its_creator ... ok
-test test::adding_a_token_you_do_not_own_fails_in_the_collection ... ok
-test test::adding_the_same_token_twice_is_rejected ... ok
-test test::a_non_depositor_cannot_withdraw ... ok
-test test::mint_to_pool_emits_events_from_both_contracts ... ok
-test test::initialize_twice_is_rejected ... ok
-test test::mint_to_pool_lands_in_the_pool_and_is_indexed ... ok
-test test::depositor_can_withdraw ... ok
-test test::mint_to_pool_records_the_creator_as_depositor ... ok
 test test::add_pulls_an_owned_token_into_the_pool ... ok
-test test::on_deposit_rejects_a_caller_that_is_not_the_collection ... ok
+test test::a_minted_token_can_be_withdrawn_by_its_creator ... ok
 test test::initialize_sets_defaults ... ok
-test test::withdrawing_a_token_not_in_the_pool_is_rejected ... ok
-test test::only_admin_can_set_the_collection ... ok
-test test::pool_holds_tokens_from_several_depositors ... ok
+test test::depositor_can_withdraw ... ok
+test test::a_non_depositor_cannot_withdraw ... ok
+test test::adding_the_same_token_twice_is_rejected ... ok
 test test::a_closed_pool_rejects_deposits ... ok
+test test::initialize_twice_is_rejected ... ok
+test test::on_deposit_rejects_a_caller_that_is_not_the_collection ... ok
+test test::pool_holds_tokens_from_several_depositors ... ok
+test test::adding_a_token_you_do_not_own_fails_in_the_collection ... ok
+test test::only_admin_can_set_the_collection ... ok
+test test::mint_to_pool_lands_in_the_pool_and_is_indexed ... ok
 test test::the_two_contracts_are_linked ... ok
-test result: ok. 17 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.63s
+test test::withdrawing_a_token_not_in_the_pool_is_rejected ... ok
+test test::mint_to_pool_records_the_creator_as_depositor ... ok
+test test::mint_to_pool_emits_events_from_both_contracts ... ok
+test result: ok. 17 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.43s
      Running unittests src/lib.rs (target/debug/deps/swap_registry-312c4c19d9105789)
 running 26 tests
-test test::empty_asset_code_is_rejected ... ok
 test test::admin_can_pause ... ok
 test test::identical_assets_are_rejected ... ok
+test test::empty_asset_code_is_rejected ... ok
+test test::exact_slippage_floor_is_accepted ... ok
 test test::amount_above_ceiling_is_rejected ... ok
-test test::initialize_sets_defaults ... ok
 test test::amount_at_ceiling_is_accepted ... ok
 test test::initialize_twice_is_rejected ... ok
+test test::initialize_sets_defaults ... ok
+test test::min_out_below_slippage_floor_is_rejected ... ok
 test test::negative_amount_is_invalid ... ok
 test test::non_admin_cannot_pause ... ok
-test test::exact_slippage_floor_is_accepted ... ok
-test test::min_out_below_slippage_floor_is_rejected ... ok
+test test::preview_fee_without_a_vault_is_rejected ... ok
 test test::overlong_asset_code_is_rejected ... ok
 test test::preview_fee_reads_through_to_the_vault ... ok
-test test::registry_links_to_the_vault ... ok
-test test::preview_fee_without_a_vault_is_rejected ... ok
-test test::records_a_valid_swap_and_emits_event ... ok
-test test::paused_registry_rejects_swaps ... ok
 test test::only_admin_can_link_the_vault ... ok
+test test::paused_registry_rejects_swaps ... ok
 test test::recording_a_swap_accrues_volume_in_the_vault ... ok
-test test::twelve_character_asset_code_is_accepted ... ok
+test test::records_a_valid_swap_and_emits_event ... ok
+test test::registry_links_to_the_vault ... ok
+test test::registry_still_records_swaps_without_a_vault ... ok
 test test::zero_amount_is_invalid ... ok
 test test::zero_min_out_is_rejected_as_unprotected ... ok
+test test::twelve_character_asset_code_is_accepted ... ok
 test test::swap_event_carries_the_fee_quoted_by_the_vault ... ok
-test test::registry_still_records_swaps_without_a_vault ... ok
 test test::volume_tier_discount_applies_across_contracts ... ok
 test test::history_is_capped_and_per_user ... ok
-test result: ok. 26 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.34s
+test result: ok. 26 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.41s
 
 ============================================================
 $ cargo fmt --all --check          ->  clean (exit 0)
@@ -96,10 +96,70 @@ $ cargo clippy --all-targets --all-features   (RUSTFLAGS=-D warnings)
 Finished `dev` profile [unoptimized + debuginfo] target(s) - no warnings
 
 ============================================================
-$ cd frontend && npm run test:run
+$ npm run test:run -- --reporter=verbose        56 passed
 ============================================================
  RUN  v4.1.10 /root/stellar-dex/frontend
+ ✓ src/lib/errors.test.ts > parseContractErrorCode > extracts the code from a Soroban host error 3ms
+ ✓ src/lib/errors.test.ts > parseContractErrorCode > handles the diagnostic-event form 1ms
+ ✓ src/lib/errors.test.ts > parseContractErrorCode > returns undefined when there is no code 1ms
+ ✓ src/lib/errors.test.ts > contractErrorName > names the known codes 1ms
+ ✓ src/lib/errors.test.ts > contractErrorName > falls back for an unknown code 1ms
+ ✓ src/lib/errors.test.ts > toSwapError — contract errors > classifies contract error #1 1ms
+ ✓ src/lib/errors.test.ts > toSwapError — contract errors > classifies contract error #2 1ms
+ ✓ src/lib/errors.test.ts > toSwapError — contract errors > classifies contract error #3 1ms
+ ✓ src/lib/errors.test.ts > toSwapError — contract errors > classifies contract error #4 0ms
+ ✓ src/lib/errors.test.ts > toSwapError — contract errors > classifies contract error #5 2ms
+ ✓ src/lib/errors.test.ts > toSwapError — contract errors > classifies contract error #6 0ms
+ ✓ src/lib/errors.test.ts > toSwapError — contract errors > classifies contract error #7 0ms
+ ✓ src/lib/errors.test.ts > toSwapError — contract errors > classifies contract error #8 0ms
+ ✓ src/lib/errors.test.ts > toSwapError — contract errors > classifies contract error #9 0ms
+ ✓ src/lib/errors.test.ts > toSwapError — network errors > classifies Failed to fetch 1ms
+ ✓ src/lib/errors.test.ts > toSwapError — network errors > classifies NetworkError when attempting to fetch 1ms
+ ✓ src/lib/errors.test.ts > toSwapError — network errors > classifies {"transaction":"tx_bad_seq"} 1ms
+ ✓ src/lib/errors.test.ts > toSwapError — network errors > classifies {"transaction":"tx_no_account"} 1ms
+ ✓ src/lib/errors.test.ts > toSwapError — network errors > classifies {"operations":["op_under_dest_min"]} 0ms
+ ✓ src/lib/errors.test.ts > toSwapError — network errors > classifies {"operations":["op_no_trust"]} 2ms
+ ✓ src/lib/errors.test.ts > toSwapError — network errors > classifies {"operations":["op_underfunded"]} 0ms
+ ✓ src/lib/errors.test.ts > toSwapError — network errors > classifies {"operations":["op_too_few_offers"]} 1ms
+ ✓ src/lib/errors.test.ts > toSwapError — network errors > classifies {"transaction":"tx_insufficient_fee"} 1ms
+ ✓ src/lib/errors.test.ts > toSwapError — wallet errors > treats a rejected signature as a wallet error, not a failure 25ms
+ ✓ src/lib/errors.test.ts > toSwapError — passthrough and fallback > returns an existing SwapError untouched 0ms
+ ✓ src/lib/errors.test.ts > toSwapError — passthrough and fallback > keeps the raw payload in detail when nothing matches 5ms
+ ✓ src/lib/errors.test.ts > toSwapError — passthrough and fallback > handles non-Error throwables 1ms
+ ✓ src/lib/ipfs.test.ts > computeCidV1Raw > matches the canonical IPFS CID for "hello world" 28ms
+ ✓ src/lib/ipfs.test.ts > computeCidV1Raw > produces the documented CIDv1 shape 7ms
+ ✓ src/lib/ipfs.test.ts > computeCidV1Raw > is deterministic 1ms
+ ✓ src/lib/ipfs.test.ts > computeCidV1Raw > differs for different content 4ms
+ ✓ src/lib/ipfs.test.ts > computeCidV1Raw > handles empty input 5ms
+ ✓ src/lib/ipfs.test.ts > computeCidV1Raw > fits the CID length bounds the contract enforces (10-128) 1ms
+ ✓ src/lib/ipfs.test.ts > ipfsUri / gatewayUrl > builds the canonical ipfs:// form 0ms
+ ✓ src/lib/ipfs.test.ts > ipfsUri / gatewayUrl > builds a gateway URL without a double slash 1ms
+ ✓ src/lib/ipfs.test.ts > validateImage > accepts a normal PNG 1ms
+ ✓ src/lib/ipfs.test.ts > validateImage > rejects a non-image type 6ms
+ ✓ src/lib/ipfs.test.ts > validateImage > rejects an empty file 4ms
+ ✓ src/lib/ipfs.test.ts > validateImage > rejects a file over the size limit 2ms
+ ✓ src/lib/ipfs.test.ts > validateImage > accepts every documented image type 5ms
+ ✓ src/lib/amounts.test.ts > toStroops > scales whole units by 1e7 13ms
+ ✓ src/lib/amounts.test.ts > toStroops > handles fractional input 1ms
+ ✓ src/lib/amounts.test.ts > toStroops > truncates beyond 7 decimals rather than rounding up 0ms
+ ✓ src/lib/amounts.test.ts > toStroops > pads short fractions correctly 6ms
+ ✓ src/lib/amounts.test.ts > toStroops > treats an empty whole part as zero 19ms
+ ✓ src/lib/amounts.test.ts > toStroops > handles zero 1ms
+ ✓ src/lib/amounts.test.ts > fromStroops > inverts toStroops for whole units 1ms
+ ✓ src/lib/amounts.test.ts > fromStroops > trims trailing zeros in the fraction 0ms
+ ✓ src/lib/amounts.test.ts > fromStroops > keeps significant decimals 0ms
+ ✓ src/lib/amounts.test.ts > fromStroops > accepts strings and numbers 1ms
+ ✓ src/lib/amounts.test.ts > fromStroops > round-trips through toStroops 1ms
+ ✓ src/lib/amounts.test.ts > applySlippage > reduces the quote by the tolerance 1ms
+ ✓ src/lib/amounts.test.ts > applySlippage > returns the full amount at zero slippage 0ms
+ ✓ src/lib/amounts.test.ts > applySlippage > emits at most 7 decimals, matching Stellar precision 0ms
+ ✓ src/lib/amounts.test.ts > applySlippage > is defensive about non-numeric input 14ms
+ ✓ src/lib/amounts.test.ts > applySlippage > never exceeds the input quote 1ms
  Test Files  3 passed (3)
       Tests  56 passed (56)
-   Start at  08:08:33
-   Duration  5.44s (transform 4.81s, setup 0ms, import 7.78s, tests 1.46s, environment 0ms)
+   Start at  12:14:47
+   Duration  2.95s (transform 1.52s, setup 0ms, import 2.76s, tests 191ms, environment 19ms)
+
+============================================================
+TOTAL: 72 contract tests + 56 frontend tests = 128 passing
+============================================================
