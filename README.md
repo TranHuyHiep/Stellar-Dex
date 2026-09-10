@@ -6,7 +6,7 @@
 [![Deploy frontend](https://github.com/TranHuyHiep/Stellar-Dex/actions/workflows/deploy-frontend.yml/badge.svg)](https://github.com/TranHuyHiep/Stellar-Dex/actions/workflows/deploy-frontend.yml)
 ![Tests](https://img.shields.io/badge/tests-128%20passing-3fb950)
 ![Network](https://img.shields.io/badge/network-Stellar%20testnet-blue)
-![Demovideo](https://youtu.be/FxvEFKFmJ88)
+[![Demo video](https://img.shields.io/badge/demo-watch%20on%20YouTube-red?logo=youtube&logoColor=white)](https://youtu.be/FxvEFKFmJ88)
 
 ---
 
@@ -31,7 +31,9 @@ transaction, two contracts running — and you can see events from both.
 testnet account instantly. Nothing here touches real money — it is all Stellar
 testnet.
 
-**Demo video (90s):** <TODO: paste the Loom/YouTube link — script in [DEMO.md](DEMO.md#demo-video-90-seconds)>
+**Demo video (1 min):** <https://youtu.be/FxvEFKFmJ88>
+
+[![Watch the demo](https://img.youtube.com/vi/FxvEFKFmJ88/maxresdefault.jpg)](https://youtu.be/FxvEFKFmJ88)
 
 Or run it locally in three commands:
 
@@ -52,7 +54,6 @@ npm run dev          # → http://localhost:5173
 | [Verified on testnet](#verified-on-testnet) | Real transaction hashes you can click |
 | [Testing](#testing) | 128 tests and how to run them |
 | [Running it](#running-it) | Full setup, including the contracts |
-| [Submission checklist](#submission-checklist) | For reviewers |
 
 ---
 
