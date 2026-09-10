@@ -1,9 +1,0 @@
-This is Stellar Studio, two apps running on four Soroban smart contracts, live on Stellar testnet. Here is the interesting part.
-
-I'll swap twenty-five XLM for USDC, at a live orderbook rate. Watch the status panel: validate, quote, registry, DEX swap, done.
-
-Now look at the event feed. That thirty basis point fee wasn't calculated by the registry. It asked a separate fee vault contract, inside the same transaction. One click, two contracts, events from both.
-
-Same pattern for NFTs. The image goes to IPFS, the reference goes on chain. Mint straight into the pool, and the collection contract calls the pool contract to hand it over. One transaction, two contracts.
-
-Fully responsive, one hundred and twenty-eight tests passing, and CI on every push. Links are in the README. Thanks for watching.

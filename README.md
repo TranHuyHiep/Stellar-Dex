@@ -6,6 +6,7 @@
 [![Deploy frontend](https://github.com/TranHuyHiep/Stellar-Dex/actions/workflows/deploy-frontend.yml/badge.svg)](https://github.com/TranHuyHiep/Stellar-Dex/actions/workflows/deploy-frontend.yml)
 ![Tests](https://img.shields.io/badge/tests-128%20passing-3fb950)
 ![Network](https://img.shields.io/badge/network-Stellar%20testnet-blue)
+![Demovideo](https://youtu.be/FxvEFKFmJ88)
 
 ---
 
@@ -671,34 +672,3 @@ DEMO.md                demo script
   scoped, and serialised by a concurrency group.
 
 ---
-
-## Submission checklist
-
-| Required | Where |
-| --- | --- |
-| Public GitHub repository | <https://github.com/TranHuyHiep/Stellar-Dex> |
-| README with complete documentation | this file |
-| Minimum 10+ meaningful commits | `git log --oneline` — 19 |
-| Live demo link | **[Try it](#try-it)** — ⚠️ paste the URL after the first Vercel deploy ([DEPLOYMENT.md](DEPLOYMENT.md)) |
-| Contract deployment address | [four addresses](#deployed-contracts-testnet), also in [`deployment.json`](deployment.json) |
-| Transaction hash for contract interaction | [five hashes](#transaction-hashes), all verified `successful: true` on Horizon |
-| Screenshot — mobile responsive UI | [`mobile-swap.png`](images/mobile-swap.png), [`mobile-mint.png`](images/mobile-mint.png) |
-| Screenshot — CI/CD pipeline running | ⚠️ `images/ci-pipeline.png` — capture the [Actions tab](https://github.com/TranHuyHiep/Stellar-Dex/actions); live badges are at the top of this file |
-| Screenshot — test output, 3+ passing | ✅ [`test-output.png`](images/test-output.png) — 128 named tests; source in [`docs/test-output.txt`](docs/test-output.txt) |
-| Demo video link (1–2 min) | ⚠️ shot list in [DEMO.md](DEMO.md#demo-video-90-seconds) — record and paste the link |
-
-⚠️ = needs something only you can produce: a deploy under your Vercel account,
-a push to your repo, or a recording. Everything else is in the repo.
-
-| Requirement | Where |
-| --- | --- |
-| Advanced smart contract development | [four contracts](#the-contracts) — typed errors, `#[contractevent]`, instance vs. persistent storage, `require_auth`, pause/close, checked arithmetic |
-| Inter-contract communication | [two pairs, calls in both directions](#inter-contract-communication) — and [on chain](#transaction-hashes) |
-| Event streaming & real-time updates | [`EventFeed.tsx`](frontend/src/components/EventFeed.tsx), [`NftEventFeed.tsx`](frontend/src/components/NftEventFeed.tsx) |
-| CI/CD pipeline setup | [`ci.yml`](.github/workflows/ci.yml), [`deploy-frontend.yml`](.github/workflows/deploy-frontend.yml) |
-| Smart contract deployment workflow | [`scripts/deploy.sh`](scripts/deploy.sh), [`deploy.yml`](.github/workflows/deploy.yml), [DEPLOYMENT.md](DEPLOYMENT.md) |
-| Mobile responsive frontend | [screenshots](#mobile) at 390px |
-| Error handling & loading states | [`errors.ts`](frontend/src/lib/errors.ts), [error handling](#error-handling) |
-| Tests for contracts and frontend | 72 Rust + 56 Vitest + 3 Playwright suites — [Testing](#testing) |
-| Production-ready architecture | [practices](#production-ready-practices) |
-| Documentation & demo presentation | this file, [DEMO.md](DEMO.md), [DEPLOYMENT.md](DEPLOYMENT.md) |
