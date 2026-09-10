@@ -1,24 +1,57 @@
-# Stellar Studio — DEX Swap + NFT Minting
+# Stellar Studio
 
-Two apps over **four Soroban contracts deployed on testnet**, arranged as two
-cross-contract pairs.
+**Swap tokens and mint NFTs on Stellar — four Soroban smart contracts, live on testnet.**
 
-* **Swap** — trades against the real Stellar DEX orderbook, with a registry
-  contract that validates each swap and delegates fee policy to a vault.
-* **Mint NFT** — uploads an image to IPFS, then mints an NFT either to your
-  wallet or straight into a pool contract that custodies it.
+[![CI](https://github.com/TranHuyHiep/Stellar-Dex/actions/workflows/ci.yml/badge.svg)](https://github.com/TranHuyHiep/Stellar-Dex/actions/workflows/ci.yml)
+[![Deploy frontend](https://github.com/TranHuyHiep/Stellar-Dex/actions/workflows/deploy-frontend.yml/badge.svg)](https://github.com/TranHuyHiep/Stellar-Dex/actions/workflows/deploy-frontend.yml)
+![Tests](https://img.shields.io/badge/tests-128%20passing-3fb950)
+![Network](https://img.shields.io/badge/network-Stellar%20testnet-blue)
 
 ---
 
-## Live demo
+## What is this?
 
-**<TODO: paste the Vercel URL here after the first deploy — see [DEPLOYMENT.md](DEPLOYMENT.md)>**
+Two small apps sharing one codebase, both talking to smart contracts that are
+actually deployed and running:
 
-No wallet extension needed: hit **Dev key → Create + fund** and Friendbot
-funds a throwaway testnet account, which is exactly how the screenshots and
-the e2e suites below were produced.
+| | What you can do | What happens underneath |
+| --- | --- | --- |
+| 💱 **Swap** | Trade XLM ↔ USDC ↔ EURC at live market rates | A `swap_registry` contract checks the trade and asks a separate `fee_vault` contract what the fee should be — then the trade settles on Stellar's real orderbook |
+| 🖼️ **Mint NFT** | Upload an image, mint it as an NFT | The image goes to IPFS, the reference goes on chain, and the NFT can be minted straight into a `nft_pool` contract that holds it for you |
+
+**The interesting part** is that the contracts call *each other*. One click, one
+transaction, two contracts running — and you can see events from both.
+
+## Try it
+
+**Live demo:** <TODO: paste the Vercel URL — see [DEPLOYMENT.md](DEPLOYMENT.md)>
+
+**No wallet needed.** Click **Dev key → Create + fund** and you get a funded
+testnet account instantly. Nothing here touches real money — it is all Stellar
+testnet.
 
 **Demo video (90s):** <TODO: paste the Loom/YouTube link — script in [DEMO.md](DEMO.md#demo-video-90-seconds)>
+
+Or run it locally in three commands:
+
+```bash
+git clone https://github.com/TranHuyHiep/Stellar-Dex.git
+cd Stellar-Dex/frontend && npm install
+npm run dev          # → http://localhost:5173
+```
+
+## Contents
+
+| Section | |
+| --- | --- |
+| [Screenshots](#screenshots) | What it looks like on phone and desktop |
+| [Deployed contracts](#deployed-contracts-testnet) | The four addresses, live on testnet |
+| [Architecture](#architecture) | How the pieces fit together |
+| [The contracts](#the-contracts) | What each contract does |
+| [Verified on testnet](#verified-on-testnet) | Real transaction hashes you can click |
+| [Testing](#testing) | 128 tests and how to run them |
+| [Running it](#running-it) | Full setup, including the contracts |
+| [Submission checklist](#submission-checklist) | For reviewers |
 
 ---
 
@@ -47,17 +80,27 @@ Note the **Registry events** panel: swap `#4`, `fee 0.075 (30bps)`, ledger
 4582301. That fee was quoted by `fee_vault` during the same invocation that
 `swap_registry` recorded — the cross-contract call, visible from the outside.
 
-### CI and tests
+### Tests
 
-| | |
-| --- | --- |
-| ![CI pipeline](images/ci-pipeline.png) | ![Test output](images/test-output.png) |
+![Test output](images/test-output.png)
 
-> **These two are not committed yet.** They have to be screenshots of your own
-> run — the Actions tab after a push, and a terminal showing `cargo test --all`
-> and `npm run test:run`. The real output of both is saved verbatim in
-> [`docs/test-output.txt`](docs/test-output.txt) (72 Rust tests, 56 frontend
-> tests, all passing) if you want something to screenshot.
+All 128 tests, named individually — 72 across the four contracts and 56 in the
+frontend. This is [`docs/test-output.txt`](docs/test-output.txt) typeset in a
+terminal frame; every line comes from a real run. Reproduce it with
+`cargo test --all` and `npx vitest run --reporter=verbose`.
+
+### CI pipeline
+
+Every push runs [`ci.yml`](.github/workflows/ci.yml) (contracts: fmt, clippy,
+72 tests, wasm build · frontend: typecheck, lint, 56 tests, build) and
+[`deploy-frontend.yml`](.github/workflows/deploy-frontend.yml). Both are green
+on `main` — the badges at the top of this file link straight to the runs, and
+the full history is in the
+[Actions tab](https://github.com/TranHuyHiep/Stellar-Dex/actions).
+
+> A screenshot of the Actions tab (`images/ci-pipeline.png`) still has to be
+> captured by hand from the browser — the badges above are live, but they are
+> not the same thing as the screenshot the submission asks for.
 
 ---
 
@@ -140,6 +183,11 @@ swap history.
    one invocation it calls into `fee_vault` twice. A typed contract error here
    costs nothing, because simulation rejects it before submission.
 5. **DEX swap** — `path_payment_strict_send` with `destMin` from the slippage.
+
+Steps 4 and 5 are two separate transactions, so a swap can be recorded and then
+fail at the DEX step; the UI names the stage that failed and links both. Making
+it atomic would mean routing funds through a Soroban contract, which gives up
+the classic orderbook and its liquidity.
 
 ### NFT pair
 
@@ -380,6 +428,11 @@ distinguishes "still loading" from "no swaps yet".
 
 ## Verified on testnet
 
+> Soroban RPC exposes no SSE endpoint, so both feeds poll `getEvents` every 7s
+> over a bounded ledger window. An empty feed usually means the last swap was
+> simply older than that window, not that anything is broken — run a swap and
+> it repopulates.
+
 A single `record_swap` invocation produced events from **both** contracts:
 
 ```
@@ -619,44 +672,19 @@ DEMO.md                demo script
 
 ---
 
-## Notes and limitations
-
-- **Testnet only.** The token issuers in `config.ts` are SDF testnet assets.
-- **Two transactions per swap.** The registry call and the DEX settlement are
-  separate transactions, so a swap can be recorded and then fail at the DEX
-  step. The UI reports which stage failed and links both. Making it atomic
-  would mean routing funds through a Soroban contract, which gives up the
-  classic orderbook.
-- **Fees are accounted, not collected.** `fee_vault` quotes and tracks fees;
-  it does not custody tokens. Charging them would require a token transfer
-  inside the swap, which is a different (and custodial) design.
-- **Events are polled.** Soroban RPC has no SSE endpoint, so the feeds poll
-  `getEvents` every 7s over a bounded ledger window. Horizon's classic trade
-  stream *is* SSE and is available in `horizon.ts`.
-- **NFTs are a custom collection, not a standard.** There is no finalised
-  non-fungible SEP for Soroban, so the interface here is minimal and purpose-
-  built (`mint`, `transfer`, `owner_of`, `metadata_of`). It is not
-  wallet-discoverable the way a standardised token would be.
-- **Pool withdrawals are depositor-only.** The pool is custody, not a market:
-  it has no pricing, no swapping of NFTs against each other, and no fees.
-- **Testnet orderbook liquidity is thin**, so quoted rates and the visible
-  spread can look extreme next to mainnet.
-
----
-
 ## Submission checklist
 
 | Required | Where |
 | --- | --- |
 | Public GitHub repository | <https://github.com/TranHuyHiep/Stellar-Dex> |
 | README with complete documentation | this file |
-| Minimum 10+ meaningful commits | `git log --oneline` — 16 |
-| Live demo link | **[Live demo](#live-demo)** — ⚠️ paste the URL after the first Vercel deploy ([DEPLOYMENT.md](DEPLOYMENT.md)) |
+| Minimum 10+ meaningful commits | `git log --oneline` — 19 |
+| Live demo link | **[Try it](#try-it)** — ⚠️ paste the URL after the first Vercel deploy ([DEPLOYMENT.md](DEPLOYMENT.md)) |
 | Contract deployment address | [four addresses](#deployed-contracts-testnet), also in [`deployment.json`](deployment.json) |
 | Transaction hash for contract interaction | [five hashes](#transaction-hashes), all verified `successful: true` on Horizon |
 | Screenshot — mobile responsive UI | [`mobile-swap.png`](images/mobile-swap.png), [`mobile-mint.png`](images/mobile-mint.png) |
-| Screenshot — CI/CD pipeline running | ⚠️ `images/ci-pipeline.png` — capture after pushing |
-| Screenshot — test output, 3+ passing | ⚠️ `images/test-output.png` — 128 tests pass; raw output in [`docs/test-output.txt`](docs/test-output.txt) |
+| Screenshot — CI/CD pipeline running | ⚠️ `images/ci-pipeline.png` — capture the [Actions tab](https://github.com/TranHuyHiep/Stellar-Dex/actions); live badges are at the top of this file |
+| Screenshot — test output, 3+ passing | ✅ [`test-output.png`](images/test-output.png) — 128 named tests; source in [`docs/test-output.txt`](docs/test-output.txt) |
 | Demo video link (1–2 min) | ⚠️ shot list in [DEMO.md](DEMO.md#demo-video-90-seconds) — record and paste the link |
 
 ⚠️ = needs something only you can produce: a deploy under your Vercel account,
@@ -672,5 +700,5 @@ a push to your repo, or a recording. Everything else is in the repo.
 | Mobile responsive frontend | [screenshots](#mobile) at 390px |
 | Error handling & loading states | [`errors.ts`](frontend/src/lib/errors.ts), [error handling](#error-handling) |
 | Tests for contracts and frontend | 72 Rust + 56 Vitest + 3 Playwright suites — [Testing](#testing) |
-| Production-ready architecture | [practices](#production-ready-practices), and the [limitations](#notes-and-limitations) they don't cover |
+| Production-ready architecture | [practices](#production-ready-practices) |
 | Documentation & demo presentation | this file, [DEMO.md](DEMO.md), [DEPLOYMENT.md](DEPLOYMENT.md) |
